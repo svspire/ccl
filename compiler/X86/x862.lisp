@@ -7875,15 +7875,15 @@
 
 (defx862 x862-local-go local-go (seg vreg xfer tag)
   (declare (ignorable xfer))
-  (when *backend-use-linear-scan*
-    (linear-scan-bailout 'go))
   (let*  ((curstack (x862-encode-stack))
-         (label (cadr tag))
-         (deststack (caddr tag)))
-    (if (not (x862-equal-encodings-p curstack deststack))
-      (multiple-value-bind (catch cstack vstack)
-                           (x862-decode-stack deststack)
-        (x862-unwind-stack seg nil catch cstack vstack)))
+          (label (cadr tag))
+          (deststack (caddr tag)))
+    (when (not (x862-equal-encodings-p curstack deststack))
+        (multiple-value-bind (catch cstack vstack)
+                             (x862-decode-stack deststack)
+          (when *backend-use-linear-scan*
+            (linear-scan-bailout 'go))
+          (x862-unwind-stack seg nil catch cstack vstack)))
     (-> label)
     (x862-unreachable-store vreg)))
 

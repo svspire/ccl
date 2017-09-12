@@ -231,6 +231,7 @@
 (defparameter *stack-access-defeat-hook* ())
 
 (defun stack-access-might-win (def)
+  "Returns true if stack-access optimization might win because the lambda list is 'ordinary' enough."
   (and *backend-use-linear-scan*
        (lambda-expression-p def)
        (let* ((ll (cadr def))
@@ -273,13 +274,12 @@
                   (*current-function-name* (or name "an anonymous function"))
                   (defeat-hook *stack-access-defeat-hook*)
                   (suppress (or force-legacy-backend
-                               
-                                (null name) (and defeat-hook
-                                                                      (or (typep defeat-hook 'function)
-                                                                          (and (typep defeat-hook 'symbol)
-                                                                               (fboundp defeat-hook)))
-                                                                      (funcall  defeat-hook name))
-                                
+                                (null name)
+                                (and defeat-hook
+                                     (or (typep defeat-hook 'function)
+                                         (and (typep defeat-hook 'symbol)
+                                              (fboundp defeat-hook)))
+                                     (funcall  defeat-hook name))
                                 (not (stack-access-might-win def))))
                   
                   (*backend-use-linear-scan*  (target-arch-case (:x8664 (unless suppress  *backend-use-linear-scan* ))    (t nil)))
