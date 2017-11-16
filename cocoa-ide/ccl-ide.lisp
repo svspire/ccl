@@ -27,8 +27,9 @@
 ; (ccl-ide :save-app "ccl:foo.app;") saves the app with the name "foo"
 ; (ccl-ide :save-app t :init-file nil) saves an IDE app which does not automatically try to load ccl-ide-init at startup
 
-(in-package "CCL")
-#+windows-target
+(in-package :CCL)
+
+#+WINDOWS-TARGET
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (pushnew :cocotron *features*))
 
@@ -41,7 +42,8 @@
 
 (defun ccl-ide (&key (force-compile nil) (save-app nil) (init-file "home:ccl-ide-init"))
   (multiple-value-bind (os bits cpu) (host-platform)
-    (declare (ignore os))
+    (declare (ignore os)
+             (special ccl::*use-pre-lion-search-files*))
     (setf *cocoa-ide-path* 
           (if save-app
             (if (eq t save-app)
@@ -52,15 +54,22 @@
     (setf *cocoa-ide-install-altconsole* save-app)
     (setf *cocoa-ide-bundle-suffix*
           (if save-app 
-            (format nil "Clozure CL-~a~a" (string-downcase cpu) bits)
-            (format nil "temp bundle-~a~a" (string-downcase cpu) bits)))
+              (multiple-value-bind (os bits cpu) (ccl::host-platform)
+                (declare (ignore os))
+                (format nil "Clozure CL-~a~a~:[~; GIT~]"
+                        (string-downcase cpu)
+                        bits
+                        (and (>= ccl::*openmcl-major-version* 1) ; git versions
+                             (>= ccl::*openmcl-minor-version* 12))))
+              (format nil "temp bundle-~a~a" (string-downcase cpu) bits)))
     (setf *cocoa-ide-frameworks*
           #+cocotron '("ccl:cocotron;Foundation.framework;" "ccl:cocotron;AppKit.framework;" "ccl:cocotron;CoreData.framework;")
           #-cocotron nil)
     (setf *cocoa-ide-libraries*
           #+cocotron '("ccl:cocotron;Foundation>.1>.0.dll" "ccl:cocotron;AppKit>.1>.0.dll" "ccl:cocotron;CoreData>.1>.0.dll")
           #-cocotron nil)
-    
+    (setf ccl::*use-pre-lion-search-files* t) ; because the new one is broken in multiple ways
+
     (cond ((member "COCOA" *modules* :test #'string-equal)
            (create-ide-bundle *cocoa-ide-path*)
            (fake-cfbundle-path *cocoa-ide-path* "ccl:cocoa-ide;Info.plist-proto" "com.clozure"
@@ -77,7 +86,7 @@
       (build-ide *cocoa-ide-path*)
       (funcall (intern "START-COCOA-IDE" (find-package :gui))))))
 
-; (ccl-ide :save-app t)
+; (ccl::ccl-ide :save-app t)
 
 
 
