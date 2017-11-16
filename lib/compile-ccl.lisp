@@ -868,7 +868,7 @@ the lisp and run REBUILD-CCL again.")
             (when ccl
               (load "ccl:tests;ansi-tests;ccl.lsp"))))))))
 
-
+#+OBSOLETE
 (defun test-ccl (&key force (update t) verbose (catch-errors t) (ansi t) (ccl t)
                       optimization-settings exit exhaustive)
   (if exhaustive
@@ -921,3 +921,18 @@ the lisp and run REBUILD-CCL again.")
                 (quit (if failed-tests 1 0)))
               failed-tests)))))))
 
+; Use tests from Github, not the old ones from SVN.
+; Github repo is at https://github.com/Clozure/ccl-tests.
+; Assumes you have cloned this into a sibling directory of the ccl directory.
+
+(defun ccl::test-ccl (&key force (update t) verbose (catch-errors
+                             t) (ansi t) (ccl t) optimization-settings
+                             exit exhaustive)
+    "Assumes ccl-tests repo is in a sibling directory to ccl: directory"
+    (declare (ignore force update verbose catch-errors ansi ccl optimization-settings exit exhaustive))
+    (let ((test-directory (make-pathname :directory
+                                         (append (butlast (pathname-directory (translate-logical-pathname "ccl:")))
+                                                 (list "ccl-tests")))))
+      (when (probe-file test-directory)
+        (load (merge-pathnames "load" test-directory) :verbose t)
+        (funcall (find-symbol "RUN-TESTS" :cl-user)))))
