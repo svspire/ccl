@@ -349,7 +349,7 @@
               (close-dir ,dirent))))))))
 
 (defun path-is-link (path)
-  "Returns T if PATH is a (hard or symbolic) link, NIL otherwise."
+  "Returns T if PATH is a symbolic link, NIL otherwise."
   ;; Actually, it's a bit more subtle than that; it basically
   ;; returns information about the last component of PATH.  If
   ;; some enclosing directory name is a link but the last component

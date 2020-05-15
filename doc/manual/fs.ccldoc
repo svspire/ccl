@@ -119,7 +119,7 @@ keyword arguments:"
         note that entries named “{code .}” or “{code ..}” are never
         included.) Defaults to {code t}.")
       (item "{code :follow-links}" :=> "If true, includes the
-        truenames of symbolic or hard links in the output; if false,
+        truenames of symbolic links in the output; if false,
         includes the link filenames without attempting to resolve
         them. Defaults to {code t}.
 
