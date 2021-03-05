@@ -745,6 +745,8 @@ value of the variable CCL:*MAKE-PACKAGE-USE-DEFAULTS*."
                               :external-size (or external-size
                                                  (max (length export) 1)))))
     (record-source-file name 'package)
+    (dolist (nname nicknames)
+      (record-source-file nname 'package))
     (unuse-package (package-use-list pkg) pkg)
     (rename-package pkg name nicknames)
     (dolist (cons (package-%local-nicknames pkg))
