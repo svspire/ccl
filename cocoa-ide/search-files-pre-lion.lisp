@@ -248,7 +248,8 @@
 (defun make-grep-arglist (wc find-str)
   (let ((grep-args nil))
     (flet ((default-args (&rest etc)
-                         (list* "-I" "-s" etc)))
+                         (list* "-O" ;; ignore symlinks. Symlink loops are catastrophic.
+                                "-I" "-s" etc)))
       (cond ((search-comments-p wc) ; much simpler when we're searching comments
              (if (regex-p wc)
                  (setf grep-args (default-args "-E" find-str)) ; -E because we need egrep here for full regex generality
@@ -336,7 +337,7 @@
       (:nr ; nonrecursive. Gotta use find and a different arglist format
        ; NOTE: If you're using grep on the command line relative to cwd, nonrecursive grep works fine, and there's
        ;       no need for the find command.
-       ;   Where grep doesn't work nonrecursively if if you explicitly hand grep an explicit folder-str to search in,
+       ;   Where grep doesn't work nonrecursively is if you explicitly hand grep an explicit folder-str to search in,
        ;       like we're doing here.
        (pop grep-arglist)
        ; last two things in arglist are (file-str folder-str) in that order.

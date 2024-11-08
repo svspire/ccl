@@ -108,6 +108,7 @@
 					   "--with-filename"
 					   "--line-number"
                                            "--no-messages"
+                                           "-O" ;; ignore symlinks. Symlink loops are catastrophic.
 					   "-e" pattern
 					   (ccl::native-untranslated-namestring directory)))
 			      :input nil
