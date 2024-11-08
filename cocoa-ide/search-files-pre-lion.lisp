@@ -212,6 +212,7 @@
     (#/setDoubleAction: outline-view (@selector #/editLine:)))
   (setf (find-string-value wc) #@"")
   (setf (folder-string-value wc) #@"")
+  (#/setEnabled: (search-comments-checkbox wc) t) ; kludge because ccl 1.12.2 (or thereabouts) disabled this button in the nib file
   (with-slots (file-name-combo-box) wc
     (#/setStringValue: file-name-combo-box #@"*.lisp")
     (#/updateFileNameString: wc file-name-combo-box)))
