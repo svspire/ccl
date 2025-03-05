@@ -13,6 +13,8 @@
 ;;; See the License for the specific language governing permissions and
 ;;; limitations under the License.
 
+;;; SVS 05-Mar-2025 this is still throwing errors in the console.
+
 ;;; TEST: (gui:make-project-window :cl+ssl)
 
 (in-package "GUI")
@@ -63,8 +65,9 @@
   (:metaclass ns:+ns-object))
 
 (defmethod current-system-item (controller)
-  (#/objectAtIndex: (systems (project-item controller))
-                    (#/selectedRow (system-view controller))))
+  (let ((row (#/selectedRow (system-view controller))))
+    (when (plusp row)
+      (#/objectAtIndex: (systems (project-item controller)) row))))
 
 ;;; Need to represent system in a way that the NSOutlineView likes
 
@@ -426,6 +429,7 @@
                                              "#<error printing error message>")
                                 :default-button "Ok")))))
 
+#-ASDF3.3
 (defun find-related-systems (obj)
   "This just uses our assumption that a project is the set of systems in a
    single .asd. It just finds all the systems with the same system-source-file."
@@ -433,3 +437,12 @@
     (loop for system being the hash-values of asdf::*defined-systems*
       if (equal (asdf:system-source-file (cdr system)) system-file)
       collect (cdr system))))
+
+#+ASDF3.3
+(defun find-related-systems (obj)
+  "This just uses our assumption that a project is the set of systems in a
+   single .asd. It just finds all the systems with the same system-source-file."
+  (let ((system-file (asdf:system-source-file (asdf:find-system obj))))
+    (loop for system being the hash-values of asdf::*registered-systems*
+      if (equal (asdf:system-source-file system) system-file)
+      collect system)))
