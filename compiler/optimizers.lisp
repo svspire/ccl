@@ -197,8 +197,9 @@
 		     '(and (not cons) (not string) (not bit-vector) (not pathname)) env)))
   (not (typep thing '(or cons string bit-vector pathname))))
 
-
 (defun fold-constant-subforms (call env)
+  "Find all numeric constants in call and fold them if possible.
+   If all elements in (cdr call) are numbers this will return a single number."
     (let* ((constants nil)
            (forms nil))
       (declare (list constants forms))
@@ -211,6 +212,9 @@
         (let* ((op (car call))
                (constant (if (cdr constants) (handler-case (apply op constants)
                                                (error (c) (declare (ignore c))
+                                                      ;;; I kinda think we ought to keep track of errors here.
+                                                      ;;;  What kind of error could occur here -- with literal numbers --
+                                                      ;;;  that wouldn't also result in a runtime error?
                                                       (return-from fold-constant-subforms (values call t))))
                              (car constants))))
           (values (if forms (cons op (cons constant (reverse forms))) constant) t))

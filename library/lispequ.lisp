@@ -125,15 +125,15 @@
 ;Assumed to be a fixnum, so if you ever assign a bit number > 28,
 ;change lfun-bits and its callers.  Do the same if you change the
 ;number of bits in a fixnum, too.  Ignore other sign.
-(defconstant $lfbits-nonnullenv-bit 0)
+(defconstant $lfbits-nonnullenv-bit 0)  ; closure
 (defconstant $lfbits-keys-bit 1)
 (defconstant $lfbits-numopt (byte 5 2))
-(defconstant $lfbits-restv-bit 7)
+(defconstant $lfbits-restv-bit 7)       ; function is a lexpr, in which case all other values are undefined
 (defconstant $lfbits-numreq (byte 6 8))
 (defconstant $lfbits-optinit-bit 14)
 (defconstant $lfbits-rest-bit 15)
 (defconstant $lfbits-aok-bit 16)
-(defconstant $lfbits-numinh (byte 6 17))
+(defconstant $lfbits-numinh (byte 6 17)) ; number of closed-over (inherited) values
 (defconstant $lfbits-info-bit 23)
 (defconstant $lfbits-trampoline-bit 24)
 (defconstant $lfbits-code-coverage-bit 25)

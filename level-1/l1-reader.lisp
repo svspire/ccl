@@ -1928,7 +1928,6 @@
                         (set-schar str 3 #\^L)
                         (set-schar str 4 #\^@)
                         (set-schar str 5 #\^J)
-                        (set-schar str 0 #\Space)
                         (set-schar str 6 (code-char #xa0))
                         str))
 )

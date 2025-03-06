@@ -226,20 +226,20 @@
 (defconstant default-node-regs-mask #b11001110)
 
 ;;; 2-bit "lisptag" values
-(defconstant tag-fixnum 0)
-(defconstant tag-list 1)		;a misnomer now
-(defconstant tag-misc 2)
-(defconstant tag-imm 3)
+(defconstant tag-fixnum 0)              ; All fixnums, whether odd or even
+(defconstant tag-list 1)		; Conses and NIL
+(defconstant tag-misc 2)                ; Heap-consed objects other than conses: vectors, symbols, functions, floats ...
+(defconstant tag-imm 3)                 ; Immediate-objects: characters, UNBOUND, other markers.
 
 ;;; 3-bit "fulltag" values
-(defconstant fulltag-even-fixnum 0)
+(defconstant fulltag-even-fixnum 0)     ; I suppose EVENP/ODDP might care; nothing else does.
 (defconstant fulltag-cons 1)
-(defconstant fulltag-nodeheader 2)
-(defconstant fulltag-imm 3)
+(defconstant fulltag-nodeheader 2)      ; Header of heap-allocated object that contains lisp-object pointers
+(defconstant fulltag-imm 3)             ; a "real" immediate object.  Shares TAG with fulltag-immheader.
 (defconstant fulltag-odd-fixnum 4)
 (defconstant fulltag-tra 5)		;was for nil on PPC32
-(defconstant fulltag-misc 6)
-(defconstant fulltag-immheader 7)
+(defconstant fulltag-misc 6)            ; Pointer "real" tag-misc object.  Shares TAG with fulltag-nodeheader.
+(defconstant fulltag-immheader 7)       ; Header of heap-allocated object that contains unboxed data.
 
 (defmacro define-subtag (name tag subtag)
   `(defconstant ,(ccl::form-symbol "SUBTAG-" name) (logior ,tag (ash ,subtag ntagbits))))
